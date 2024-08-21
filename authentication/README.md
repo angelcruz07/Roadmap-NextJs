@@ -17,11 +17,13 @@ Primero, instala NextAuth utilizando el siguiente comando.
 pnpm add next-auth@beta
 ```
 
-Estaremos usando Prisma ORM
-asi que necesitamos instalar la dependencia
+Estaremos usando Prisma ORM asi que necesitamos
+instalar la dependencia.k
 
 ```bash
-pnpm add @prisma
+pnpm add prisma --save-dev
+
+npx prisma init --datasource-provider PostgreSQL
 ```
 
 ## Configuracion inicial
