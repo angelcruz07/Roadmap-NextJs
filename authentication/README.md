@@ -9,12 +9,19 @@ que estare utilizando es la beta.
 
 **Version utilizada** : `next-auth: 5.0.0-beta.20`
 
-## Instalacion
+## Instalaciones
 
 Primero, instala NextAuth utilizando el siguiente comando.
 
 ```bash
 pnpm add next-auth@beta
+```
+
+Estaremos usando Prisma ORM
+asi que necesitamos instalar la dependencia
+
+```bash
+pnpm add @prisma
 ```
 
 ## Configuracion inicial
@@ -85,15 +92,15 @@ por el momento tu codigo deberia lucir así:
 ```ts
 //auth.config.ts
 
-import type { NextAuthConfig } from 'next-auth'
+import type { NextAuthConfig } from "next-auth";
 
 export const authConfig: NextAuthConfig = {
   pages: {
-    signIn: '/auth/login',
-    newUser: '/auth/new-account'
+    signIn: "/auth/login",
+    newUser: "/auth/new-account",
   },
-  providers: []
-}
+  providers: [],
+};
 ```
 
 ## Autenticacion basada en credenciales
@@ -113,48 +120,48 @@ Para definir un logueo con credenciales propias de nuestra
 base de datos deberemos de configurar el provider como el siguiente ejemplo:
 
 ```ts
-import prisma from '@/lib/prisma'
-import bcrypt from 'bcrypt'
-import type { NextAuthConfig } from 'next-auth'
-import Credentials from 'next-auth/providers/credentials'
-import { z } from 'zod'
+import prisma from "@/lib/prisma";
+import bcrypt from "bcrypt";
+import type { NextAuthConfig } from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import { z } from "zod";
 
 export const authConfig: NextAuthConfig = {
   pages: {
-    signIn: '/auth/login',
-    newUser: '/auth/new-account'
+    signIn: "/auth/login",
+    newUser: "/auth/new-account",
   },
   providers: [
     Credentials({
       async authorize(credentials) {
         const parsedCredentials = z
           .object({ email: z.string().email(), password: z.string().min(7) })
-          .safeParse(credentials)
+          .safeParse(credentials);
 
-        if (!parsedCredentials.success) return null
+        if (!parsedCredentials.success) return null;
 
-        const { email, password } = parsedCredentials.data
+        const { email, password } = parsedCredentials.data;
 
         // Buscar el correo del usuario en la base de datos
         const user = await prisma.user.findUnique({
-          where: { email: email.toLowerCase() }
-        })
+          where: { email: email.toLowerCase() },
+        });
 
-        if (!user) return null
+        if (!user) return null;
 
         // Comparar nuestra contrasena
-        const passwordMatch = await bcrypt.compare(password, user.password)
+        const passwordMatch = await bcrypt.compare(password, user.password);
 
-        if (!passwordMatch) return null
+        if (!passwordMatch) return null;
 
-        const { password: _, ...rest } = user
+        const { password: _, ...rest } = user;
 
         // Regresar la data del usuario
-        return rest
-      }
-    })
-  ]
-}
+        return rest;
+      },
+    }),
+  ],
+};
 ```
 
 Asumo que notaste la importacion de prisma
