@@ -97,7 +97,7 @@ export const Navbar = () => {
         </Popover>
 
         {links.map((link) => (
-          <Link href={link.path} className="font-semibold">
+          <Link key={link.path} href={link.path} className="font-semibold">
             {link.label}
           </Link>
         ))}
